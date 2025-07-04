@@ -1,25 +1,30 @@
 #include <iostream>
-#include <cmath>
 
 
 double divide(double numerator, double denominator) {
     if (denominator == 0) throw std::invalid_argument("Division by zero");
-    double quotient = 0.0;
     double sign = ((numerator < 0) ^ (denominator < 0)) ? -1 : 1;
     numerator = std::abs(numerator);
     denominator = std::abs(denominator);
-    int tens = 0;
-    while (numerator != 0) {
-        if (numerator < denominator) {
-            tens += 1;
-            numerator *= 10;
-        }
-        if (tens > 19) {
-            break;
-        }
+
+    double quotient = 0.0;
+    double factor = 1.0;
+
+    // Integer part
+    while (numerator >= denominator) {
         numerator -= denominator;
-        quotient += 1/std::pow(10, tens);
+        quotient += 1.0;
     }
+
+    // Decimal part
+    for (int i = 0; i < 10 && numerator != 0; ++i) {
+        numerator *= 10;
+        factor /= 10;
+        int digit = static_cast<int>(numerator / denominator);
+        quotient += digit * factor;
+        numerator -= digit * denominator;
+    }
+
     return sign * quotient;
 }
 
